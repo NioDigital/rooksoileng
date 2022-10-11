@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<odoo>
+    <record id="purchase_order_form_approval_inherited_view" model="ir.ui.view">
+        <field name="name">purchase.order.approval.inherited.view</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='date_approve']" position="before">
+                <field name="date_approve1"/>
+            </xpath>
+            <xpath expr="//button[@name='button_approve']" position="replace">
+                <button name="button_approve" class="oe_highlight" type="object" attrs="{'invisible':[('state', 'not in', 'first_approval')]}" groups="custom_purchase_double_approval.group_managing_director"/>
+            </xpath>
+            <xpath expr="//button[@name='button_confirm']" position="before">
+                <button name="send_to_approval" string="Send to Approval" class="oe_highlight" type="object" attrs="{'invisible':[('state', 'not in', 'sent')]}" groups="custom_purchase_double_approval.group_service_engineer"/>
+            </xpath>
+            
+            <xpath expr="//button[@name='button_approve']" position="before">
+                <button name="button_first_approve" string="Approve" class="oe_highlight" type="object" attrs="{'invisible':[('state', 'not in', 'to approve')]}" groups="purchase.group_purchase_manager"/>
+            </xpath>
+            <xpath expr="//button[@name='button_confirm']" position="replace">
+                <button name="button_confirm" string="Confirm" class="oe_highlight" type="object" invisible="1"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>
+
+
+
+
