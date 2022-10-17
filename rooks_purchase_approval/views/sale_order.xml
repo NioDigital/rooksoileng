@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<record id="view_order_form_inherited" model="ir.ui.view">
+        <field name="name">sale.order.form</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form" />
+        <field name="arch" type="xml">
+        	<xpath expr="//button[@name='action_confirm']" position='before'>
+        		<button name="action_create_rfq" id="action_create_rfq" data-hotkey="v" string="Generate RFQ" class="btn-primary" type="object" attrs="{'invisible': [('purchase_order_count', '=', 1)]}"/>
+        	</xpath>
+            <!-- <xpath expr="//button[@name='action_confirm']" position='attributes'>
+                <attribute name='invisible'>{'purchase_order_count', '=', 0}</attribute>
+            </xpath> -->
+        </field>
+    </record>
+
+    <record id="purchase_order_form_inherited" model="ir.ui.view">
+        <field name="name">purchase.order.form</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//button[@name='action_rfq_send']" position='before'>
+                <button name="send_approve" id="send_approve" data-hotkey="v" string="First Approve" class="btn-primary" type="object" attrs="{'invisible': [('state', 'in', ('first_approval', 'second_approver', 'third_approve', 'cancel'))]}" groups="rooks_purchase_approval.group_engineer_manager"/>
+            </xpath>
+            <xpath expr="//button[@name='action_rfq_send']" position='before'>
+                <button name="send_approve2" id="send_approve2" data-hotkey="v" string="Second Approve" class="btn-primary" type="object" attrs="{'invisible': [('state', 'in', ('second_approver', 'third_approve', 'cancel'))]}" groups="rooks_purchase_approval.group_purchase_coordinator"/>
+            </xpath>
+            <xpath expr="//button[@name='action_rfq_send']" position='before'>
+                <button name="send_approve3" id="send_approve3" data-hotkey="v" string="Third Approve" class="btn-primary" type="object" attrs="{'invisible': [('state', 'in', ('third_approve', 'cancel'))]}" groups="rooks_purchase_approval.group_managing_directors"/>
+            </xpath>
+            <xpath expr="//button[@name='button_cancel']" position='replace'>
+                <button name="button_cancel" string="Cancel" type="object" data-hotkey="x" state="cancel"/>
+            </xpath>
+           <!--  <xpath expr="//button[@name='button_confirm']" position="attributes">
+                <attribute name="states">third_approve</attribute>
+            </xpath> -->
+            <xpath expr="//button[@name='action_rfq_send']" position="attributes">
+                <attribute name="states">third_approve</attribute>
+            </xpath>
+            <xpath expr="//button[@name='print_quotation']" position="attributes">
+                <attribute name="states">third_approve</attribute>
+            </xpath>
+            <xpath expr="//field[@name='currency_id']" position="after">
+                <field name='signature' widget="signature"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<template id="report_purchasequotation_document_inherit" inherit_id="purchase.report_purchasequotation_document">
+		<xpath expr="//p[@t-field='o.notes']" position="after">
+			<table align="right" style="width:30%;">
+              <tr style="font-weight:bold;">
+                <td  border="1" >
+                  <div t-field="o.signature"/>
+                 </td>
+              </tr>
+            </table>
+		</xpath>
+	</template>
+</odoo>
