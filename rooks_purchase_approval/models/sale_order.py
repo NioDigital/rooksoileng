@@ -8,34 +8,34 @@ class SaleOrder(models.Model):
 		for order in self.order_line:
 			order._purchase_service_create()
 		purchase_order_ids = self._get_purchase_orders()
-		for line in purchase_order_ids:	
-			user = self.env['res.users'].search([])
-			print(user,"USER")
-			activity_user_id = False
-			for loop in user:
-				if loop.has_group('rooks_purchase_approval.group_engineer_manager'):
-					activity_user_id = loop.id
-			print(activity_user_id,"Activity user id")
-			activity_type = self.env['mail.activity.type'].sudo().search([('name','ilike','RFQ Allocation Notification')])
-			print(activity_type,"Activity TYPE")
-			if not activity_type:
-				activity_type = self.env['mail.activity.type'].create({'name':'RFQ Allocation Notification',
-					'res_model':'purchase.order',
-					'delay_unit':'days',
-					# 'res_id': 
-					'default_user_id': self.env.user.id,
-					'summary': 'RFQ Engineer Manager Notification',
-					'default_note': 'Please click on Approve button for Engineer Manager Confirmation',
-					'delay_count':0})
-			if activity_type:
-				date_deadline = self.env['mail.activity']._calculate_date_deadline(activity_type)
-				line.activity_schedule(
-				    activity_type_id=activity_type.id,
-				    summary=activity_type.summary,
-				    note=activity_type.default_note,
-				    user_id=activity_user_id,
-				    date_deadline=date_deadline
-				)
+		# for line in purchase_order_ids:	
+		user = self.env['res.users'].search([])
+		print(user,"USER")
+		activity_user_id = False
+		for loop in user:
+			if loop.has_group('rooks_purchase_approval.group_engineer_manager'):
+				activity_user_id = loop.id
+		print(activity_user_id,"Activity user id")
+		activity_type = self.env['mail.activity.type'].sudo().search([('name','ilike','RFQ Allocation Notification')])
+		print(activity_type,"Activity TYPE")
+		if not activity_type:
+			activity_type = self.env['mail.activity.type'].create({'name':'RFQ Allocation Notification',
+				'res_model':'purchase.order',
+				'delay_unit':'days',
+				# 'res_id': 
+				'default_user_id': self.env.user.id,
+				'summary': 'RFQ Engineer Manager Notification',
+				'default_note': 'Please click on Approve button for Engineer Manager Confirmation',
+				'delay_count':0})
+		if activity_type:
+			date_deadline = self.env['mail.activity']._calculate_date_deadline(activity_type)
+			purchase_order_ids.activity_schedule(
+			    activity_type_id=activity_type.id,
+			    summary=activity_type.summary,
+			    note=activity_type.default_note,
+			    user_id=activity_user_id,
+			    date_deadline=date_deadline
+			)
 		# return activity_type
 		# return True
 
