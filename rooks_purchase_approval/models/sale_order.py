@@ -10,14 +10,11 @@ class SaleOrder(models.Model):
 		purchase_order_ids = self._get_purchase_orders()
 		# for line in purchase_order_ids:	
 		user = self.env['res.users'].search([])
-		print(user,"USER")
 		activity_user_id = False
 		for loop in user:
 			if loop.has_group('rooks_purchase_approval.group_engineer_manager'):
 				activity_user_id = loop.id
-		print(activity_user_id,"Activity user id")
 		activity_type = self.env['mail.activity.type'].sudo().search([('name','ilike','RFQ Allocation Notification')])
-		print(activity_type,"Activity TYPE")
 		if not activity_type:
 			activity_type = self.env['mail.activity.type'].create({'name':'RFQ Allocation Notification',
 				'res_model':'purchase.order',
