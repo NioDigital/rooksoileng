@@ -7,9 +7,8 @@ class SaleOrder(models.Model):
 	def action_create_rfq(self):
 		for order in self.order_line:
 			order._purchase_service_create()
-			# purchase_order = self.env['purchase.order'].search([])
-			# for order in purchase_order:
-			# 	order.write({'state' : 'first_approval'})
+		purchase_order_ids = self._get_purchase_orders()
+		for line in purchase_order_ids:	
 			user = self.env['res.users'].search([])
 			print(user,"USER")
 			activity_user_id = False
@@ -30,15 +29,15 @@ class SaleOrder(models.Model):
 					'delay_count':0})
 			if activity_type:
 				date_deadline = self.env['mail.activity']._calculate_date_deadline(activity_type)
-				self.activity_schedule(
+				line.activity_schedule(
 				    activity_type_id=activity_type.id,
 				    summary=activity_type.summary,
 				    note=activity_type.default_note,
 				    user_id=activity_user_id,
 				    date_deadline=date_deadline
 				)
-			return activity_type
-		return True
+		# return activity_type
+		# return True
 
 	def action_confirm(self):
 		res = super(SaleOrder, self).action_confirm()
@@ -119,7 +118,7 @@ class PurchaseOrder(models.Model):
 		user = self.env['res.users'].search([])
 		activity_user_id = False
 		for loop in user:
-			if loop.has_group('rooks_purchase_approval.group_purchase_coordinator') or loop.has_group('rooks_purchase_approval.group_engineer_manager'):
+			if loop.has_group('rooks_purchase_approval.group_purchase_coordinator'):
 				activity_user_id = loop.id
 		activity_type = self.env['mail.activity.type'].sudo().search([('name','ilike','Managing Director Approved')])
 		if not activity_type:
@@ -250,12 +249,12 @@ class PurchaseOrder(models.Model):
 				'context': ctx,
 			}
 
-	# def button_confirm(self):
-	# 	res = super(PurchaseOrder, self).button_confirm()
-	# 	if self.state == 'draft':
-	# 		raise UserError(_("Need to Approve by Managing Director to confirm PO"))
-	# 	else:
-	# 		return res
+	def button_confirm(self):
+		res = super(PurchaseOrder, self).button_confirm()
+		if not self.env.user.has_group('rooks_purchase_approval.group_purchase_coordinator') or self.state == 'third_approve':
+			raise UserError(_("Only Purchase Coordinator can confirm the PO once approved by Managing Director."))
+		else:
+			return res
 
 
 
