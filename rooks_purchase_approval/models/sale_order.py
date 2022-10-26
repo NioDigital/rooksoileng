@@ -8,6 +8,12 @@ class SaleOrder(models.Model):
 		for order in self.order_line:
 			order._purchase_service_create()
 		purchase_order_ids = self._get_purchase_orders()
+		attachment = []
+		for attachments in self.env['ir.attachment'].search([('res_id', '=', self.id)]):
+			attachment.append(attachments.id)
+		if attachment:
+			for purchase in purchase_order_ids:
+				purchase.message_post(attachment_ids=attachment)
 		# for line in purchase_order_ids:	
 		user = self.env['res.users'].search([])
 		activity_user_id = False
@@ -99,7 +105,7 @@ class PurchaseOrder(models.Model):
 
 	state = fields.Selection(selection_add=[('first_approval','Engineer Manager Approved'),
 											('second_approver','PO Manager Approved'),
-											('third_approve', 'Manager Approved')])
+											('third_approve', 'Managing Director Approved')])
 
 	signature = fields.Binary(string="Signature")
 
