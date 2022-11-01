@@ -6,7 +6,8 @@ class SaleOrder(models.Model):
 
 	def action_create_rfq(self):
 		for order in self.order_line:
-			order._purchase_service_create()
+			if order.product_id and order.product_type == 'product':
+				order._purchase_service_create()
 		purchase_order_ids = self._get_purchase_orders()
 		attachment = []
 		for attachments in self.env['ir.attachment'].search([('res_id', '=', self.id)]):
